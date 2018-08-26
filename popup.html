@@ -5,8 +5,7 @@
 <body>
   <div id="delay-slider"> 
     <h3> Set seconds of delay: </h3>
-    <input type="range" id="slider" min="0" max="20" value="5" step="1" 
-      oninput="displaySliderVal(value)">
+    <input type="range" id="slider" min="0" max="20" value="5" step="1"> 
     <span id="slider-label"> <span id="slider-val">5</span> seconds </span>
   </div>
   <section id="add-sites"> 
@@ -20,39 +19,7 @@
       <ul id="delayed-sites"> </ul>
     </div>
   </section>
-<script type="text/javascript"> 
-  //takes the value of the slider and displays it underneath it
-  //oninput event handler
-  function displaySliderVal(newVal) {
-    document.querySelector("#slider-val").innerHTML = newVal;
-  } 
-  //adds the website in the text field to the list of sites to delay loading of
-  //empties the text field
-  function addSite() {
-    let inputField = document.querySelector("#add-input");
-    if (!inputField.value) return; //do nothing on empty field 
-    let list = document.getElementsByTagName("ul")[0];
-    let newLi = document.createElement("li"); //list item of added site
-    newLi.innerHTML = inputField.value;
-    let rmButton = document.createElement("button"); //button to remove site
-    rmButton.addEventListener("click", () => {
-      newLi.remove(); 
-    });
-    rmButton.innerHTML = "X";
-    rmButton.class = "rmButton";
-    newLi.appendChild(rmButton);
-    list.appendChild(newLi);
-
-    inputField.value = ""; //clear input field
-  }
-
-  document.querySelector("button").addEventListener("click", addSite);
-  document.querySelector("#add-input").addEventListener("keyup", (event) => {
-    if (event.keyCode == 13) { //if user presses enter on input
-      addSite();
-    }
-  });
-
+<script src="popup.js"> 
 </script>
 </body>
 </html>
