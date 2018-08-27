@@ -1,0 +1,20 @@
+{
+  "manifest_version":2,
+  "name": "ProcrastinationLagger",
+  "version":"1.0.0",
+  "description": "Lag the display of select sites for 0-20 seconds so you hopefully realize that you should be doing something else!", 
+  "permissions":["storage"], 
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/16.png",
+      "48": "images/48.png",
+      "128": "images/128.png"
+    }
+  },
+  "icons": {
+    "16": "images/16.png",
+    "48": "images/48.png",
+    "128": "images/128.png"
+  } 
+}
