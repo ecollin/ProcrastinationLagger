@@ -13,31 +13,52 @@ function addSite(host) {
   newLi.appendChild(rmButton);
   list.appendChild(newLi);
 }
-
 //If the input box is not empty, adds the hostname in it to the list of sites.
 function addInputToSite() {
   let inputField = document.querySelector("#add-input");
-  if (!inputField.value) return; //do nothing on empty field if e is true 
-  addSite(inputField.value);
-
-  inputField.value = ""; //clear input field
+  let newSite = inputField.value;
+  inputField.value = ""; 
+  if (!newSite) return;   
+  addSite(newSite);
+  chrome.storage.sync.get({"addedSites":[]}, (result) => {
+    if (chrome.runtime.lastError) {
+      console.log("Error in chrome.storage.sync.get!");
+      window.close();
+    }
+    let sitesArr = result.addedSites;
+console.log("arr2?: " + Array.isArray(sitesArr));
+    sitesArr.push(newSite); //add one more site to stored map 
+    chrome.storage.sync.set({"addedSites": sitesArr}); 
+  });
 }
-chrome.storage.local.get(["addedSites"], result => {
-  
-});
 
+//sets up the event handlers for the slider and the add site button.
+function setupHandlers() {
+  let slider = document.querySelector("#slider"); 
+  slider.addEventListener("input", () => {
+    let sliderDisplay = document.querySelector("#slider-val");
+    sliderDisplay.innerHTML = slider.value;
+  });
+    
+  document.querySelector("button").addEventListener("click", addInputToSite); 
+  document.querySelector("#add-input").addEventListener("keyup", (event) => {
+    if (event.keyCode == 13) { //if user presses enter on input
+      addInputToSite(); 
+    }
+  });
+}
 
-let slider = document.querySelector("#slider"); 
-slider.addEventListener("input", () => {
-  let sliderDisplay = document.querySelector("#slider-val");
-  sliderDisplay.innerHTML = slider.value;
-});
-
-document.querySelector("button").addEventListener("click", addInputToSite); 
-document.querySelector("#add-input").addEventListener("keyup", (event) => {
-  if (event.keyCode == 13) { //if user presses enter on input
-    addInputToSite(); 
+chrome.storage.sync.get({"addedSites":[]}, (result) => { //[] is defaultVal
+  if (chrome.runtime.lastError) {
+    console.log("Error in chrome.storage.sync.get!");
+    window.close();
   }
+  let sitesArr = result.addedSites; 
+console.log("arr?" + Array.isArray(sitesArr));
+  for (let i = 0; i < sitesArr.length; i++) {
+    addSite(sitesArr[i]);
+  }
+  setupHandlers();  
 });
 
 
