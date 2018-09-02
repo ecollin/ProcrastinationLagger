@@ -26,7 +26,6 @@ function addInputToSite() {
       window.close();
     }
     let sitesArr = result.addedSites;
-console.log("arr2?: " + Array.isArray(sitesArr));
     sitesArr.push(newSite); //add one more site to stored map 
     chrome.storage.sync.set({"addedSites": sitesArr}); 
   });
@@ -54,7 +53,6 @@ chrome.storage.sync.get({"addedSites":[]}, (result) => { //[] is defaultVal
     window.close();
   }
   let sitesArr = result.addedSites; 
-console.log("arr?" + Array.isArray(sitesArr));
   for (let i = 0; i < sitesArr.length; i++) {
     addSite(sitesArr[i]);
   }
