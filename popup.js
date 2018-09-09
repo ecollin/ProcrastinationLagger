@@ -12,6 +12,13 @@ function addSite(host) {
       let sitesArr = result.addedSites;
       sitesArr.splice(indexOfHost,1); //removes indexOfHost from sitesArr
       chrome.storage.sync.set({"addedSites": sitesArr}); 
+      
+      let addedSitesDisplay = document.querySelector("#added-sites");
+      if (sitesArr.length == 0) {
+        addedSitesDisplay.style.display = "none";
+
+      }
+
     });    
   });
   rmButton.innerHTML = "X";
@@ -21,6 +28,10 @@ function addSite(host) {
 }
 //If the input box is not empty, adds the hostname in it to the list of sites.
 function addInputToSite() {
+  let addedSitesDisplay = document.querySelector("#added-sites");
+  if (addedSitesDisplay.style.display == "none") {
+    addedSitesDisplay.style.display = "block";
+  }
   let inputField = document.querySelector("#add-input");
   let newSite = inputField.value;
   inputField.value = ""; 
@@ -54,12 +65,6 @@ function setupHandlers() {
   });
 }
 
-//Here get the slider value. set the display value. 
-//In setup handlers, upon changing slider value, save it. 
-//Also only use one get below by asking for two different properties
-//with  one call which is possible check documentaiton
-
-
 
 chrome.storage.sync.get({"addedSites":[], "sliderVal": 5}, (result) => {
 //above line gives default values if values not set yet
@@ -70,6 +75,9 @@ chrome.storage.sync.get({"addedSites":[], "sliderVal": 5}, (result) => {
   let sitesArr = result.addedSites; 
   for (let i = 0; i < sitesArr.length; i++) {
     addSite(sitesArr[i]);
+  }
+  if (sitesArr.length == 0) { //hide added-sites area if no sites added
+    document.querySelector("#added-sites").style.display = "none";
   }
   let sliderDisplay = document.querySelector("#slider-val");
   sliderDisplay.innerHTML = result.sliderVal; //get secs of delay from storage
