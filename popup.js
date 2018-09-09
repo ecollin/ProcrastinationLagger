@@ -9,8 +9,8 @@ function addSite(host) {
   rmButton.addEventListener("click", () => {
     newLi.remove(); 
     chrome.storage.sync.get({"addedSites":[]}, (result) => { 
-    let sitesArr = result.addedSites;
-      sitesArr.splice(indexOfHost,1);
+      let sitesArr = result.addedSites;
+      sitesArr.splice(indexOfHost,1); //removes indexOfHost from sitesArr
       chrome.storage.sync.set({"addedSites": sitesArr}); 
     });    
   });
@@ -43,6 +43,7 @@ function setupHandlers() {
   slider.addEventListener("input", () => {
     let sliderDisplay = document.querySelector("#slider-val");
     sliderDisplay.innerHTML = slider.value;
+    chrome.storage.sync.set({"sliderVal":slider.value});
   });
     
   document.querySelector("button").addEventListener("click", addInputToSite); 
@@ -53,7 +54,15 @@ function setupHandlers() {
   });
 }
 
-chrome.storage.sync.get({"addedSites":[]}, (result) => { //[] is defaultVal
+//Here get the slider value. set the display value. 
+//In setup handlers, upon changing slider value, save it. 
+//Also only use one get below by asking for two different properties
+//with  one call which is possible check documentaiton
+
+
+
+chrome.storage.sync.get({"addedSites":[], "sliderVal": 5}, (result) => {
+//above line gives default values if values not set yet
   if (chrome.runtime.lastError) {
     console.log("Error in chrome.storage.sync.get!");
     window.close();
@@ -62,6 +71,9 @@ chrome.storage.sync.get({"addedSites":[]}, (result) => { //[] is defaultVal
   for (let i = 0; i < sitesArr.length; i++) {
     addSite(sitesArr[i]);
   }
+  let sliderDisplay = document.querySelector("#slider-val");
+  sliderDisplay.innerHTML = result.sliderVal; //get secs of delay from storage
+
   setupHandlers();  
 });
 
