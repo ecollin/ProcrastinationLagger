@@ -5,8 +5,14 @@ function addSite(host) {
   let newLi = document.createElement("li"); //list item of added site
   newLi.innerHTML = host;
   let rmButton = document.createElement("button"); //button to remove site
+  const indexOfHost = list.length - 1;
   rmButton.addEventListener("click", () => {
     newLi.remove(); 
+    chrome.storage.sync.get({"addedSites":[]}, (result) => { 
+    let sitesArr = result.addedSites;
+      sitesArr.splice(indexOfHost,1);
+      chrome.storage.sync.set({"addedSites": sitesArr}); 
+    });    
   });
   rmButton.innerHTML = "X";
   rmButton.class = "rmButton";
