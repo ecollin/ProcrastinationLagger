@@ -3,7 +3,7 @@
   "name": "ProcrastinationLagger",
   "version":"1.0.0",
   "description": "Lag the display of select sites for 0-20 seconds so you hopefully realize that you should be doing something else!", 
-  "permissions":["storage"], 
+  "permissions":["storage", "activeTab"], 
   "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {

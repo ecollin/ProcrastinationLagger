@@ -1,5 +1,5 @@
 //Adds the given host to the list of sites to lag when loading
-//with a button to remove it
+//Also adds a button to remove it from the list 
 function addSite(host) {
   let list = document.getElementsByTagName("ul")[0];
   let newLi = document.createElement("li"); //list item of added site
@@ -7,16 +7,17 @@ function addSite(host) {
   let rmButton = document.createElement("button"); //button to remove site
   const indexOfHost = list.length - 1;
   rmButton.addEventListener("click", () => {
-    newLi.remove(); 
-    chrome.storage.sync.get({"addedSites":[]}, (result) => { 
+    newLi.remove(); //remove site from list 
+    chrome.storage.sync.get({"addedSites":[]}, (result) => {
+    //result is obj with addedSites field that is stored val or a default []
+    //remove site from storage
       let sitesArr = result.addedSites;
       sitesArr.splice(indexOfHost,1); //removes indexOfHost from sitesArr
       chrome.storage.sync.set({"addedSites": sitesArr}); 
       
       let addedSitesDisplay = document.querySelector("#added-sites");
-      if (sitesArr.length == 0) {
-        addedSitesDisplay.style.display = "none";
-
+      if (sitesArr.length == 0) { //if only elt was removed, don't display list
+        addedSitesDisplay.style.display = "none"; 
       }
 
     });    
@@ -26,7 +27,8 @@ function addSite(host) {
   newLi.appendChild(rmButton);
   list.appendChild(newLi);
 }
-//If the input box is not empty, adds the hostname in it to the list of sites.
+//If the input form is not empty, adds the hostname it contains
+//to the list of added sites. 
 function addInputToSite() {
   let addedSitesDisplay = document.querySelector("#added-sites");
   if (addedSitesDisplay.style.display == "none") {
@@ -65,9 +67,8 @@ function setupHandlers() {
   });
 }
 
-
+//on load up want to run the following code to set things up
 chrome.storage.sync.get({"addedSites":[], "sliderVal": 5}, (result) => {
-//above line gives default values if values not set yet
   if (chrome.runtime.lastError) {
     console.log("Error in chrome.storage.sync.get!");
     window.close();
