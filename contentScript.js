@@ -4,9 +4,12 @@ alert('domain: ' + domain);
 chrome.storage.local.get({"addedSites":[]}, (result) => {
   let addedSites = result.addedSites;
   for (let i = 0; i < addedSites.length; i++) {
-     alert("addedSites[i]: " + addedSites[i]);
-    let addedDomain = trimToRoot(addedSites[i]);
+    let siteObj = addedSites[i];
+    let addedDomain = trimToRoot(siteObj.site);
+
+    alert("addedSites[i]: " + addedDomain);
     if (domain === addedDomain) { //check if domain == any added sites
+      siteObj.visit(); //update timestamp since we will now visit the site
       delayLoad(); 
       break;
     }
