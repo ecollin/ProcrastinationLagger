@@ -1,7 +1,6 @@
 let domain = trimToRoot(window.location.href);
 /* now compare current domain above to any used added sites to delay. */
 alert('domain: ' + domain);
-/*
 chrome.storage.local.get({"addedSites":[]}, (result) => {
   let addedSites = result.addedSites;
   for (let i = 0; i < addedSites.length; i++) {
@@ -13,7 +12,6 @@ chrome.storage.local.get({"addedSites":[]}, (result) => {
     }
   }
 });
-*/
 /*
  * Given a URL-like string, trims any protocol, path, and subdomains 
  * until the root domain is reached. URL-like means URL or partly trimmed URL
@@ -51,6 +49,6 @@ function trimToRoot(url) {
  */
 
 function delayLoad() {
-
+alert("ya boi a god");
 }
 
