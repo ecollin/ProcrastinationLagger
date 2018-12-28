@@ -5,8 +5,6 @@
  * if he already sat through it say 30 seconds ago, or however long he chooses.
  */
 class DelayedSite {
-  lastVisit;
-  site;
   constructor(domain) {
     this.lastVisit = 0; /* Stores the timestamp of last visit in seconds. */
     this.site = domain; /* The name of the site to delay */
@@ -33,7 +31,7 @@ function addSiteVisually(domain) {
   const indexOfDomain = list.length - 1;
   rmButton.addEventListener("click", () => {
     newLi.remove(); //remove site from list 
-    chrome.storage.local.get({"addedSites"}, (result) => {
+    chrome.storage.local.get("addedSites", (result) => {
       if (chrome.runtime.lastError) {
         console.log("Error in chrome.storage.local.get!");
         window.close();
@@ -62,7 +60,7 @@ function addSiteVisually(domain) {
  * to the stored array of added sites and the visual list of added sites 
  */
 function addInputToSite() {
-  let inputField = document.querySelector("#add-input");
+  let inputField = document.querySelector("#site-input");
   let newSite = inputField.value;
   inputField.value = ""; 
   if (!newSite) return;   
@@ -94,39 +92,91 @@ function setupHandlers() {
   slider.addEventListener("input", () => {
     let sliderDisplay = document.querySelector("#slider-val");
     sliderDisplay.innerHTML = slider.value;
-    chrome.storage.sync.set({"sliderVal":slider.value});
+    chrome.storage.local.set({"sliderVal":slider.value});
   });
 
-  document.querySelector("button").addEventListener("click", addInputToSite); 
-  document.querySelector("#add-input").addEventListener("keyup", (event) => {
-  let slider = document.querySelector("add-input").
-  addEventListener("keyup", (event) => {
-    if (event.keyCode == 13) { //if user presses enter on input
-      addInputToSite(); 
+  document.querySelector("#add-button").addEventListener("click", addInputToSite); 
+  document.querySelector("#site-input").addEventListener("keyup", (event) => {
+      if (event.keyCode == 13) { //if user presses enter on site input box
+        addInputToSite(); 
+      }
+  });
+  let setRest = event => {
+    let mins = document.querySelector("#mins-rest");
+    let secs = document.querySelector("#secs-rest");
+    //note that due to code below, mins and secs can only hold pos numbers or ""
+    if (mins.value === "") mins.value = 0; //default to 0.
+    if (secs.value === "") secs.value = 0;
+    let minsInt = Number(mins.value);
+    let secsInt = Number(secs.value); 
+    if (minsInt > 60) {
+      minsInt = 60; //maximum of 60 mins and seconds
+      mins.value = "60";
+    }
+    if (secsInt > 60) {
+      secsInt = 60;
+      secs.value = "60";
+    }
+    
+    let secsRest = (minsInt * 60 + secsInt);
+    chrome.storage.local.set({"restTime":secsRest});
+  };
+  document.querySelector("#mins-rest").addEventListener("keypress", event => {
+    let code = event.keyCode;
+
+    if (code == 13) { 
+      setRest(event);
+    } 
+    if (!(code >= 48 && code <= 57) || (code >= 96 && code <= 105)) {
+      event.preventDefault(); //don't let user enter non-numbers.
     }
   });
+  document.querySelector("#secs-rest").addEventListener("keypress", event => {
+    let code = event.keyCode;
+
+    if (code == 13) { 
+      setRest(event);
+    } 
+    if (!(code >= 48 && code <= 57) || (code >= 96 && code <= 105)) {
+      event.preventDefault(); //don't let user enter non-numbers.
+    }
+  });
+  document.querySelector("#rest-button").addEventListener("click", setRest); 
 }
 
 
 /*
  * On load up want to run the following code to set things up visually in popup
  */
-chrome.storage.local.get({"addedSites":[], "sliderVal": 5}, (result) => {
+chrome.storage.local.get({"addedSites":[], 
+        "sliderVal": 5, "restTime":60}, (result) => {
+
   if (chrome.runtime.lastError) {
     console.log("Error in chrome.storage.local.get!");
     window.close();
   }
-  let sitesArr = result.addedSites; 
+
+  let sitesArr = result.addedSites; //array of DelayedSite objs
   for (let i = 0; i < sitesArr.length; i++) {
-    addSiteVisually(sitesArr[i]);
+    addSiteVisually(sitesArr[i].site);
   }
   if (sitesArr.length == 0) { //hide added-sites area if no sites added
     document.querySelector("#added-sites").style.display = "none";
   }
   let sliderDisplay = document.querySelector("#slider-val");
   sliderDisplay.innerHTML = result.sliderVal; //get secs of delay from storage
-  //now make it so if user presses enter the input box is submitted
-  setupHandlers();
+  document.querySelector("#slider").value = result.sliderVal;
+  /*Now get the seconds of time to wait before delaying same site a second time
+   * stored in result.restTime. This is seconds but should be broken into 
+   * minutes and seconds and then placed into the displays for secs and mins of 
+   * rest on the popup. 
+   */
+  let secsRest = result.restTime; //time to wait b4 delaying same site 2nd time
+  let mins = Math.floor( (secsRest/60) );
+  document.querySelector("#mins-rest").value = mins;
+  document.querySelector("#secs-rest").value = secsRest - mins * 60;
+ 
+  setupHandlers(); //finally setup handlers for input fields, slider, + buttons
 });
 
 

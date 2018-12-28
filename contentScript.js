@@ -1,14 +1,19 @@
 let domain = trimToRoot(window.location.href);
 /* now compare current domain above to any used added sites to delay. */
 alert('domain: ' + domain);
-chrome.storage.local.get({"addedSites":[]}, (result) => {
+chrome.storage.local.get({"addedSites":[], "restTime":60}, (result) => {
   let addedSites = result.addedSites;
   for (let i = 0; i < addedSites.length; i++) {
-    let siteObj = addedSites[i];
+    let siteObj = addedSites[i]; 
     let addedDomain = trimToRoot(siteObj.site);
 
     alert("addedSites[i]: " + addedDomain);
     if (domain === addedDomain) { //check if domain == any added sites
+      if ( (Date.now() - siteObj.lastVisit) * 1000 <=  result.restTime) {
+        /* If difference between last time site was visited and current time 
+         * in seconds is not at least restTime, don't delay loading. */
+         break;
+      }
       siteObj.visit(); //update timestamp since we will now visit the site
       delayLoad(); 
       break;

@@ -4,18 +4,26 @@
 </head>
 <body>
   <div> 
-    <h3> Set seconds of delay: </h3>
-    <input type="range" id="slider" min="0" max="20" value="5" step="1"> 
-    <span> <span id="slider-val">5</span> seconds </span>
+    <div>
+      <h3> Set seconds of delay: </h3>
+      <input type="range" id="slider" min="0" max="30" value="5" step="1"> 
+      <span> <span id="slider-val">5</span> seconds </span>
+    </div>
+    <div> 
+      <h3> Rest between delays on same site:</h3>
+      <input type="text" id="mins-rest" placeholder="Minutes of delay">:
+      <input type="text" id="secs-rest" placeholder="Seconds of delay">
+      <button id="rest-button">Set rest time </button>
+    </div>
   </div>
   <section> 
     <h3> Add sites to delay: </h3> 
     <div>
-      <input type="text" id="add-input" placeholder="website to delay">    
-      <button>Add</button>
+      <input type="text" id="site-input" placeholder="Website to delay">    
+      <button id="add-button">Add</button>
     </div>
     <div id="added-sites">
-      <h4>List of sites to delay</h4> 
+      <h3>List of sites to delay:</h3> 
       <ul> </ul>
     </div>
   </section>
