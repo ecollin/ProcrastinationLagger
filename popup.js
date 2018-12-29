@@ -100,10 +100,15 @@ function setupHandlers() {
     if (minsInt > 60) {
       minsInt = 60; //maximum of 60 mins and seconds
       mins.value = "60";
+    } else if (minsInt < 10 && mins.value.length == 1) {
+      //currently displays 1 or 5 or 9, want 01, 05, 09.
+      mins.value = "0" + mins.value; 
     }
     if (secsInt > 60) {
       secsInt = 60;
       secs.value = "60";
+    } else if (secsInt < 10 && secs.value.length == 1) {
+      secs.value = "0" + secs.value; 
     }
     
     let secsRest = (minsInt * 60 + secsInt);
@@ -161,9 +166,19 @@ chrome.storage.local.get({"addedSites":[],
    */
   let secsRest = result.restTime; //time to wait b4 delaying same site 2nd time
   let mins = Math.floor( (secsRest/60) );
-  document.querySelector("#mins-rest").value = mins;
-  document.querySelector("#secs-rest").value = secsRest - mins * 60;
- 
+  let secs = secsRest - mins*60;
+  let minsField = document.querySelector("#mins-rest");
+  let secsField = document.querySelector("#secs-rest");
+  minsField.value = mins.toString();
+  secsField.value = secs.toString();
+  if (mins < 10) {
+   //currently displays 1 or 5 or 9, want 01, 05, 09.
+    minsField.value = "0" + minsField.value; 
+  }
+  if (secs < 10) {
+    secsField.value = "0" + secsField.value;
+  }
+
   setupHandlers(); //finally setup handlers for input fields, slider, + buttons
 });
 

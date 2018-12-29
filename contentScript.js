@@ -9,7 +9,7 @@ chrome.storage.local.get({"addedSites":[],"timesOfLastDelay":[],"restTime":60},
   for (let i = 0; i < addedSites.length; i++) {
     let addedDomain = trimToRoot(addedSites[i]);
     if (domain === addedDomain) { //check if domain == any added sites
-      if ( ( (Date.now()) - timesOfLastDelay[i]) / 1000 <=  result.restTime) {
+      if ( ( ((Date.now() - timesOfLastDelay[i]) / 1000) <=  result.restTime) {
         /* If difference between last time site was delayed and current time 
          * in seconds is not at least restTime, don't delay loading. */
          break;
@@ -59,6 +59,7 @@ function trimToRoot(url) {
  */
 
 function delayLoad() {
-alert("in delayLoad");
+  let delayTime = document.querySelector("#slider").value;
+  
 }
 
