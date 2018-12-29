@@ -142,7 +142,11 @@ function setupHandlers() {
  * On load up want to run the following code to set things up visually in popup
  */
 chrome.storage.local.get({"addedSites":[], 
-        "sliderVal": 5, "restTime":60}, (result) => {
+        "sliderVal": 10, "restTime":60}, (result) => {
+/* Note that if the default values given above are used, the stored fields
+ * will remain undefined in memory (this code doesn't set them) until user
+ * manually sets them, so it's impt to give defaults in future when get
+ * is called if it's possible the user has not set the values yet. */ 
 
   if (chrome.runtime.lastError) {
     console.log("Error in chrome.storage.local.get!");

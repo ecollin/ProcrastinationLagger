@@ -2,14 +2,22 @@ let domain = trimToRoot(window.location.href);
 /* now compare current domain above to any used added sites to delay. */
 chrome.storage.local.get({"addedSites":[],"timesOfLastDelay":[],"restTime":60},
                          (result) => {
+  if (chrome.runtime.lastError) {
+    console.log("Error in chrome.storage.local.get!");
+    return; //will reach end of content script after this
+  }
+
+
   let addedSites = result.addedSites;
   let timesOfLastDelay = result.timesOfLastDelay; //holds timestamps from when
              //corresponding index in addedSites was last delayed while loading.
 
   for (let i = 0; i < addedSites.length; i++) {
-    let addedDomain = trimToRoot(addedSites[i]);
+    let addedDomain = trimToRoot(addedSites[i]); 
+    /* We don't need to worry about the above being a bogus domain
+     * since the following "if" likely will never be true then. */ 
     if (domain === addedDomain) { //check if domain == any added sites
-      if ( ( ((Date.now() - timesOfLastDelay[i]) / 1000) <=  result.restTime) {
+      if (((Date.now() - timesOfLastDelay[i]) / 1000) <=  result.restTime) {
         /* If difference between last time site was delayed and current time 
          * in seconds is not at least restTime, don't delay loading. */
          break;
@@ -59,7 +67,12 @@ function trimToRoot(url) {
  */
 
 function delayLoad() {
-  let delayTime = document.querySelector("#slider").value;
-  
+  chrome.storage.local.get({"sliderVal":10}, (result) => {
+    if (chrome.runtime.lastError) {
+      console.log("Error in chrome.storage.local.get!");
+      window.close();
+    }
+    let delayLength = result.sliderVal; //time to delay site for
+  });
 }
 
