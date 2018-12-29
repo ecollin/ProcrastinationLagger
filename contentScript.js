@@ -1,25 +1,27 @@
 let domain = trimToRoot(window.location.href);
 /* now compare current domain above to any used added sites to delay. */
-alert('domain: ' + domain);
-chrome.storage.local.get({"addedSites":[], "restTime":60}, (result) => {
+chrome.storage.local.get({"addedSites":[],"timesOfLastDelay":[],"restTime":60},
+                         (result) => {
   let addedSites = result.addedSites;
-  for (let i = 0; i < addedSites.length; i++) {
-    let siteObj = addedSites[i]; 
-    let addedDomain = trimToRoot(siteObj.site);
+  let timesOfLastDelay = result.timesOfLastDelay; //holds timestamps from when
+             //corresponding index in addedSites was last delayed while loading.
 
-    alert("addedSites[i]: " + addedDomain);
+  for (let i = 0; i < addedSites.length; i++) {
+    let addedDomain = trimToRoot(addedSites[i]);
     if (domain === addedDomain) { //check if domain == any added sites
-      if ( (Date.now() - siteObj.lastVisit) * 1000 <=  result.restTime) {
-        /* If difference between last time site was visited and current time 
+      if ( ( (Date.now()) - timesOfLastDelay[i]) / 1000 <=  result.restTime) {
+        /* If difference between last time site was delayed and current time 
          * in seconds is not at least restTime, don't delay loading. */
          break;
       }
-      siteObj.visit(); //update timestamp since we will now visit the site
+      timesOfLastDelay[i] = Date.now(); //about to visit + delay, set timestamp
+      chrome.storage.local.set({"timesOfLastDelay":timesOfLastDelay});
       delayLoad(); 
       break;
     }
   }
 });
+
 /*
  * Given a URL-like string, trims any protocol, path, and subdomains 
  * until the root domain is reached. URL-like means URL or partly trimmed URL
@@ -49,7 +51,7 @@ function trimToRoot(url) {
     str = str.substring(pos+1, str.length); 
     pos = str.indexOf("."); 
   }
-  return url;
+  return url.trim();
 }
 
 /*
@@ -57,6 +59,6 @@ function trimToRoot(url) {
  */
 
 function delayLoad() {
-alert("ya boi a god");
+alert("in delayLoad");
 }
 

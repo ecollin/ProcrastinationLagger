@@ -1,23 +1,3 @@
-/*
- * The following class is used to store the websites the user wishes to delay
- * the loading of when he visits and to store the last time he visited them.
- * Time is tracked so if the user wishes he can prevent the load delay
- * if he already sat through it say 30 seconds ago, or however long he chooses.
- */
-class DelayedSite {
-  constructor(domain) {
-    this.lastVisit = 0; /* Stores the timestamp of last visit in seconds. */
-    this.site = domain; /* The name of the site to delay */
-  }
-  /*
-   * Updates the lastVisit property of the object to hold the timestamp 
-   * in seconds of the last time the site was visited. 
-   */
-  visit() {
-    this.lastVisit = Date.now(); 
-  }
-}
-
 /* 
  * Adds the given domain to the displayed list of sites to lag when loading
  * The site should already be in the stored array of sites to lag.
@@ -31,17 +11,20 @@ function addSiteVisually(domain) {
   const indexOfDomain = list.length - 1;
   rmButton.addEventListener("click", () => {
     newLi.remove(); //remove site from list 
-    chrome.storage.local.get("addedSites", (result) => {
+    chrome.storage.local.get(["addedSites", "timesOfLastDelay"], (result) => {
       if (chrome.runtime.lastError) {
         console.log("Error in chrome.storage.local.get!");
         window.close();
       }
-    //result is obj with an addedSites field that is the stored val, which is 
-    //an array of DelayedSite objects. Contains at least the obj being removed. 
-    //Next lines remove the current site from storage
+    //Next lines remove the current site from storage. Remove its domain
+    //from "addedSites", and its last time visited that caused loading delay
+    // from "timesOfLastDelay"
       let sitesArr = result.addedSites;
+      let timesOfLastDelay = result.timesOfLastDelay;
       sitesArr.splice(indexOfDomain,1); //removes indexOfDomain from sitesArr
-      chrome.storage.local.set({"addedSites": sitesArr}); 
+      timesOfLastDelay.splice(indexOfDomain,1); 
+      chrome.storage.local.set({"addedSites": sitesArr, 
+                               "timesOfLastDelay" : timesOfLastDelay}); 
       
       let addedSitesDisplay = document.querySelector("#added-sites");
       if (sitesArr.length == 0) { //don't display list if no elements left
@@ -56,7 +39,7 @@ function addSiteVisually(domain) {
 }
 
 /*
- * If the popup's input form is not empty, adds the domain it contains
+ * If the popup's website input form is not empty, adds the domain it contains
  * to the stored array of added sites and the visual list of added sites 
  */
 function addInputToSite() {
@@ -70,15 +53,20 @@ function addInputToSite() {
   }
 
   addSiteVisually(newSite);
-  chrome.storage.local.get({"addedSites":[]}, (result) => {
+  chrome.storage.local.get({"addedSites":[], "timesOfLastDelay":[]}, 
+                           (result) => {
     if (chrome.runtime.lastError) {
       console.log("Error in chrome.storage.local.get!");
       window.close();
     }
     let sitesArr = result.addedSites;
-    let newSiteObj = new DelayedSite(newSite);
-    sitesArr.push(newSiteObj); //add one more site to stored map 
-    chrome.storage.local.set({"addedSites": sitesArr}); 
+    let timesOfLastDelay = result.timesOfLastDelay;
+    sitesArr.push(newSite);
+    timesOfLastDelay.push(0); /* default timestamp of last visit is 0 so that 
+    * Date.now() - timestamp is surely > the restTime between 
+    * delays on same site. So first site visit ever will cause delay. */
+    chrome.storage.local.set({"addedSites": sitesArr, 
+                             "timesOfLastDelay":timesOfLastDelay});
   });
 }
 
@@ -156,9 +144,9 @@ chrome.storage.local.get({"addedSites":[],
     window.close();
   }
 
-  let sitesArr = result.addedSites; //array of DelayedSite objs
+  let sitesArr = result.addedSites; 
   for (let i = 0; i < sitesArr.length; i++) {
-    addSiteVisually(sitesArr[i].site);
+    addSiteVisually(sitesArr[i]);
   }
   if (sitesArr.length == 0) { //hide added-sites area if no sites added
     document.querySelector("#added-sites").style.display = "none";
