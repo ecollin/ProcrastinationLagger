@@ -73,6 +73,12 @@ function delayLoad() {
       window.close();
     }
     let delayLength = result.sliderVal; //time to delay site for
+    let newBody = document.createElement("body");
+    newBody.appendChild(document.createTextNode("this is hype"));
+    let oldBody = document.getElementsByTagName("body")[0];
+    document.body = newBody;
+    setTimeout(function() {
+      document.body = oldBody;
+    }, delayLength*1000);
   });
 }
-
