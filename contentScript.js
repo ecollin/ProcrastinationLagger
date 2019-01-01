@@ -89,6 +89,9 @@ function delayLoad(delayLength) {
   /* I noticed on google-images if an image was open it would appear despite
    * the delay div. Setting z-index below fixes this problem. */
   div.style.zIndex = "1000"; 
+  div.style.backgroundImage = 'url("./images/BillGates.jpg")';
+  div.style.backgroundRepeat = "no repeat";
+  div.style.backgroundSize = "cover";
 
   /* set up text */
   let text = document.createElement("div");
