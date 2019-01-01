@@ -1,7 +1,7 @@
 let domain = trimToRoot(window.location.href);
-/* now compare current domain above to any used added sites to delay. */
-chrome.storage.local.get({"addedSites":[],"timesOfLastDelay":[],"restTime":60},
-                         (result) => {
+/* now compare current domain above to any user added sites to delay. */
+chrome.storage.local.get({"sliderVal":10, "addedSites":[],"timesOfLastDelay":[],
+                         "restTime":60}, (result) => {
   if (chrome.runtime.lastError) {
     console.log("Error in chrome.storage.local.get!");
     return; //will reach end of content script after this
@@ -24,7 +24,7 @@ chrome.storage.local.get({"addedSites":[],"timesOfLastDelay":[],"restTime":60},
       }
       timesOfLastDelay[i] = Date.now(); //about to visit + delay, set timestamp
       chrome.storage.local.set({"timesOfLastDelay":timesOfLastDelay});
-      delayLoad(); 
+      if (result.sliderVal != 0) delayLoad(result.sliderVal); 
       break;
     }
   }
@@ -66,19 +66,45 @@ function trimToRoot(url) {
  * Delays the loadtime of the current site
  */
 
-function delayLoad() {
-  chrome.storage.local.get({"sliderVal":10}, (result) => {
-    if (chrome.runtime.lastError) {
-      console.log("Error in chrome.storage.local.get!");
-      window.close();
-    }
-    let delayLength = result.sliderVal; //time to delay site for
-    let newBody = document.createElement("body");
-    newBody.appendChild(document.createTextNode("this is hype"));
-    let oldBody = document.getElementsByTagName("body")[0];
-    document.body = newBody;
+function delayLoad(delayLength) {
+  let div = document.createElement("div"); /* The div to display when delaying
+      * document loading. Could also make a whole new document.body but then
+      * have to wait for the entire document.body to load to save it in a var.
+      * This way only have to wait for the root document.body node to load */
+
+  /* set style properties so that the div will cover the screen*/
+  div.style.position = "fixed";
+  div.style.padding = "0px";
+  div.style.margin = "0px";
+  div.style.top = "0px";
+  div.style.left = "0px";
+  div.style.height = "100%";
+  div.style.width = "100%";
+  div.style.background = "yellow"; 
+  div.style.display = "block";
+  /* set up text */
+  let text = document.createElement("div");
+  text.innerHTML = "Let this ugly yellow, and my use of the word galvanize," 
+    + " galvanize you into getting back to work! You have better things to do!";
+  //I definitely need to work on this text and this page on the whole. 
+  //Focusing on just getting it working now though.
+  text.style.color = "black";
+  text.style.textAlign = "center";
+  text.style.fontFamily = "Times New Roman";
+  text.style.fontSize = "30px";
+  text.style.padding = "250px 200px";
+  div.appendChild(text);
+
+  let id = setInterval(function() {
+    if (!document.body) return; //document.body hasn't been created yet
+    clearInterval(id); //no longer need to check if document.body is created
+    let original = document.body.style.visibility; //store to set back to later
+    document.body.style.visibility = "hidden";  
+    div.style.visibility = "visible"; //make this the only visible child
+    document.body.appendChild(div);
     setTimeout(function() {
-      document.body = oldBody;
-    }, delayLength*1000);
-  });
+      document.body.removeChild(div);
+      document.body.style.visibility = original;  
+    }, delayLength * 1000);
+  }, 10);
 }
