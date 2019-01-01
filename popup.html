@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div> 
@@ -11,9 +12,11 @@
     </div>
     <div> 
       <h3> Rest between delays on same site:</h3>
-      <input type="text" id="mins-rest" placeholder="Minutes of delay">:
-      <input type="text" id="secs-rest" placeholder="Seconds of delay">
-      <button id="rest-button">Set rest time </button>
+      <span id="rest-input">
+        <input type="text" id="mins-rest" placeholder="Minutes of delay" title=Minutes""> :
+        <input type="text" id="secs-rest" placeholder="Seconds of delay" title="Seconds">
+        <button id="rest-button">Set rest time </button>
+      </span>
     </div>
   </div>
   <section> 

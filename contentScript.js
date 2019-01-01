@@ -17,12 +17,17 @@ chrome.storage.local.get({"sliderVal":10, "addedSites":[],"timesOfLastDelay":[],
     /* We don't need to worry about the above being a bogus domain
      * since the following "if" likely will never be true then. */ 
     if (domain === addedDomain) { //check if domain == any added sites
-      if (((Date.now() - timesOfLastDelay[i]) / 1000) <=  result.restTime) {
+      let now = Date.now();
+      if ((((now - timesOfLastDelay[i]) / 1000) <=  result.restTime) &&
+             (((now - timesOfLastDelay[i]) / 1000) >= result.sliderVal)) {
         /* If difference between last time site was delayed and current time 
-         * in seconds is not at least restTime, don't delay loading. */
+         * in seconds is not at least restTime, and at least result.sliderVal
+         * has elapsed (this is the time of delay--so the second condition 
+         * ensures user has sat through delay instead of, eg, just refreshing)
+         * then don't cause another delay. */
          break;
       }
-      timesOfLastDelay[i] = Date.now(); //about to visit + delay, set timestamp
+      timesOfLastDelay[i] = now; //about to visit + delay, set timestamp
       chrome.storage.local.set({"timesOfLastDelay":timesOfLastDelay});
       if (result.sliderVal != 0) delayLoad(result.sliderVal); 
       break;
@@ -81,7 +86,10 @@ function delayLoad(delayLength) {
   div.style.height = "100%";
   div.style.width = "100%";
   div.style.background = "yellow"; 
-  div.style.display = "block";
+  /* I noticed on google-images if an image was open it would appear despite
+   * the delay div. Setting z-index below fixes this problem. */
+  div.style.zIndex = "1000"; 
+
   /* set up text */
   let text = document.createElement("div");
   text.innerHTML = "Let this ugly yellow, and my use of the word galvanize," 
