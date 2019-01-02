@@ -85,18 +85,23 @@ function delayLoad(delayLength) {
   div.style.left = "0px";
   div.style.height = "100%";
   div.style.width = "100%";
-  div.style.background = "yellow"; 
   /* I noticed on google-images if an image was open it would appear despite
    * the delay div. Setting z-index below fixes this problem. */
   div.style.zIndex = "1000"; 
-  div.style.backgroundImage = 'url("./images/BillGates.jpg")';
-  div.style.backgroundRepeat = "no repeat";
+
+/* Perhaps add in background page later.
+  let imgURL = chrome.runtime.getURL("images/BG1.jpg");
+  div.style.backgroundImage = 'url("' + imgURL + '")'; 
+  div.style.backgroundRepeat = "repeat";
   div.style.backgroundSize = "cover";
+  div.style.background = "white"; 
+*/
 
   /* set up text */
   let text = document.createElement("div");
-  text.innerHTML = "Let this ugly yellow, and my use of the word galvanize," 
-    + " galvanize you into getting back to work! You have better things to do!";
+  text.innerHTML = "Really? For the sake of the effectiveness of my extension,"
+                      + " and thus my success and livelihood, stop now! " 
+                      + "(It'll help you get your life together too.)";
   //I definitely need to work on this text and this page on the whole. 
   //Focusing on just getting it working now though.
   text.style.color = "black";
@@ -119,3 +124,5 @@ function delayLoad(delayLength) {
     }, delayLength * 1000);
   }, 10);
 }
+
+

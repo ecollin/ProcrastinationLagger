@@ -1,7 +1,7 @@
 {
   "manifest_version":2,
   "name": "Fabius: Procrastination Delayer",
-  "version":"1.0.0",
+  "version":"0.0.1",
   "description": "Lag the display of select sites for 0-30 seconds so that you (hopefully) realize that you should be doing something else!", 
   "content_scripts": [
     {
@@ -23,5 +23,8 @@
     "16": "images/16.png",
     "48": "images/48.png",
     "128": "images/128.png"
-  } 
+  },
+  "web_accessible_resources":[
+    "images/*"
+  ]
 }
