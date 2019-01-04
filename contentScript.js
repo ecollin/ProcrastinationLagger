@@ -85,17 +85,9 @@ function delayLoad(delayLength) {
   div.style.left = "0px";
   div.style.height = "100%";
   div.style.width = "100%";
-  /* I noticed on google-images if an image was open it would appear despite
-   * the delay div. Setting z-index below fixes this problem. */
-  div.style.zIndex = "1000"; 
-
-/* Perhaps add in background page later.
-  let imgURL = chrome.runtime.getURL("images/BG1.jpg");
-  div.style.backgroundImage = 'url("' + imgURL + '")'; 
-  div.style.backgroundRepeat = "repeat";
-  div.style.backgroundSize = "cover";
-  div.style.background = "white"; 
-*/
+  div.style.zIndex = "1000000000000"; 
+  div.id = "delayer-div";
+  div.style.backgroundColor = "black";
 
   /* set up text */
   let text = document.createElement("div");
@@ -104,7 +96,7 @@ function delayLoad(delayLength) {
                       + "(It'll help you get your life together too.)";
   //I definitely need to work on this text and this page on the whole. 
   //Focusing on just getting it working now though.
-  text.style.color = "black";
+  text.style.color = "white";
   text.style.textAlign = "center";
   text.style.fontFamily = "Times New Roman";
   text.style.fontSize = "30px";
@@ -114,13 +106,13 @@ function delayLoad(delayLength) {
   let id = setInterval(function() {
     if (!document.body) return; //document.body hasn't been created yet
     clearInterval(id); //no longer need to check if document.body is created
-    let original = document.body.style.visibility; //store to set back to later
-    document.body.style.visibility = "hidden";  
-    div.style.visibility = "visible"; //make this the only visible child
-    document.body.appendChild(div);
+    let original = document.body.style.display;
+    document.body.style.display = "none";
+    div.style.display= "block"; //make sure this is visible.
+    document.documentElement.appendChild(div);//apend to HTML tag
     setTimeout(function() {
-      document.body.removeChild(div);
-      document.body.style.visibility = original;  
+      document.documentElement.removeChild(div);
+      document.body.style.display = original;
     }, delayLength * 1000);
   }, 10);
 }
