@@ -106,13 +106,9 @@ function delayLoad(delayLength) {
   let id = setInterval(function() {
     if (!document.body) return; //document.body hasn't been created yet
     clearInterval(id); //no longer need to check if document.body is created
-    let original = document.body.style.display;
-    document.body.style.display = "none";
-    div.style.display= "block"; //make sure this is visible.
-    document.documentElement.appendChild(div);//apend to HTML tag
+    document.body.appendChild(div);//apend to HTML tag
     setTimeout(function() {
-      document.documentElement.removeChild(div);
-      document.body.style.display = original;
+      document.body.removeChild(div);
     }, delayLength * 1000);
   }, 10);
 }
